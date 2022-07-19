@@ -5,15 +5,29 @@ import s3fs
 import os
 import time 
 
+## S3 Paths
+DATAJOINT_BUCKET = "/l2l.datajoint.data/" 
+GENERATED_DATA = DATAJOINT_BUCKET + "processed/"
+
 HUMAN_LFP_DIR = 'human-lfp'
-NHP_DIR = 'nhp-lfp'
+NHP_LFP_DIR = 'nhp-lfp'
 NHP_WCST_DIR = 'nhp-lfp/wcst-preprocessed/'
+
+## DataJoint URLs
+DATAJOINT_URL = "http://u19-db.cch9uqmmvxno.us-west-2.rds.amazonaws.com/"
+
+def get_subject_session_string(subject, session):
+    return "sub-" + subject + "_sess-" + str(session)
 
 def get_spike_path(subject, session):
     return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "ephys/")
 
 def get_behavior_path(subject, session):
     return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "behavior", "sub-" + str(subject) + "_sess-" + str(session) + "_object_features.csv")
+
+def get_eye_path(subject, session):
+    return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session),
+                        "eye")
 
 def get_channels_path(subject, session):
     return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "channellocations",\
