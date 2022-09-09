@@ -19,18 +19,18 @@ DATAJOINT_URL = "http://u19-db.cch9uqmmvxno.us-west-2.rds.amazonaws.com/"
 def get_subject_session_string(subject, session):
     return "sub-" + subject + "_sess-" + str(session)
 
-def get_spike_path(subject, session):
-    return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "spikes/")
+def get_spike_path(subject, session, species_dir=NHP_WCST_DIR):
+    return os.path.join(species_dir, "rawdata", "sub-" + str(subject), "sess-" + str(session), "spikes/")
 
-def get_behavior_path(subject, session):
-    return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "behavior", "sub-" + str(subject) + "_sess-" + str(session) + "_object_features.csv")
+def get_behavior_path(subject, session, species_dir=NHP_WCST_DIR):
+    return os.path.join(species_dir, "rawdata", "sub-" + str(subject), "sess-" + str(session), "behavior", "sub-" + str(subject) + "_sess-" + str(session) + "_object_features.csv")
 
-def get_eye_path(subject, session):
-    return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session),
+def get_eye_path(subject, session, species_dir=NHP_WCST_DIR):
+    return os.path.join(species_dir, "rawdata", "sub-" + str(subject), "sess-" + str(session),
                         "eye")
 
-def get_channels_path(subject, session):
-    return os.path.join(NHP_WCST_DIR, "rawdata", "sub-" + str(subject), "sess-" + str(session), "channellocations",\
+def get_channels_path(subject, session, species_dir=NHP_WCST_DIR):
+    return os.path.join(species_dir, "rawdata", "sub-" + str(subject), "sess-" + str(session), "channellocations",\
             "sub-" + str(subject) + "_sess-" + str(session) + "_channellocations.csv") 
 
 def list_session_units(fs, subject, session):
