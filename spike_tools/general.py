@@ -19,6 +19,12 @@ DATAJOINT_URL = "http://u19-db.cch9uqmmvxno.us-west-2.rds.amazonaws.com/"
 def get_subject_session_string(subject, session):
     return "sub-" + subject + "_sess-" + str(session)
 
+def get_subject_sessions(fs, subject, species_dir=NHP_WCST_DIR):
+    all_sessions =  fs.ls(os.path.join(species_dir, "rawdata", "sub-" + str(subject)))
+    all_sessions = [x.split("sess-")[1] for x in all_sessions if len(x.split("sess-")) > 1]
+    all_sessions = [x for x in all_sessions if x != "testsession"]
+    return all_sessions 
+
 def get_spike_path(subject, session, species_dir=NHP_WCST_DIR):
     return os.path.join(species_dir, "rawdata", "sub-" + str(subject), "sess-" + str(session), "spikes/")
 
