@@ -73,8 +73,9 @@ def list_session_units(fs, subject, session, species_dir=NHP_WCST_DIR):
 
     channels = [x.split("chan-")[-1].split("_")[0] for x in unit_files]
     units = [int(x.split("unit-")[-1].split("_")[0]) for x in unit_files]
-    unit_ids = list(range(0, len(units)))
-    unit_info = pd.DataFrame(np.array([unit_ids, channels, units, unit_files]).T, columns=["UnitID", "Channel", "Unit", "SpikeTimesFile"])
+    unit_info = pd.DataFrame(np.array([channels, units, unit_files]).T, columns=["Channel", "Unit", "SpikeTimesFile"])
+    unit_info = unit_info.sort_values(by=["Channel", "Unit"])
+    unit_info["UnitID"] = np.arange(len(unit_info))
     return unit_info
 
 def _get_spike_timestamps(fs, x):
