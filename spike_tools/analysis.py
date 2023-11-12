@@ -15,7 +15,7 @@ def firing_rate(spData, channelData, bins, smoothing, trials=None):
     else:
         trial_unit_index = pd.MultiIndex.from_product([trials, np.unique(channelData.UnitID).astype(int), bins[:-1]], names=["TrialNumber", "UnitID", "TimeBins"]).to_frame()
     trial_unit_index = trial_unit_index.droplevel(2).drop(columns=["TrialNumber", "UnitID"]).reset_index()
-    
+    assert len(trial_unit_index.groupby(["TrialNumber", "UnitID"]).count()) == len(np.unique(spData.TrialNumber)) * len(np.unique(channelData.UnitID))
     groupedData = spData.groupby(["TrialNumber", "UnitID"])
 
     fr_DF = groupedData.apply(lambda x: pd.DataFrame(\
@@ -24,7 +24,8 @@ def firing_rate(spData, channelData, bins, smoothing, trials=None):
                              "TimeBins": bins[:-1]}))
     #print("Trial", np.unique(trial_unit_index.UnitID))
     #print("FR", np.unique(fr_DF.droplevel(2).reset_index().UnitID))
-    all_units_df = trial_unit_index.merge(fr_DF.droplevel(2).reset_index(), how='outer', on=["TrialNumber", "UnitID", "TimeBins"])
+    all_units_df = pd.merge(trial_unit_index, fr_DF.droplevel(2).reset_index(), how='left', on=["TrialNumber", "UnitID", "TimeBins"])
+    assert len(all_units_df.groupby(["TrialNumber", "UnitID"]).count()) == len(np.unique(spData.TrialNumber)) * len(np.unique(channelData.UnitID))
     #for unit in np.unique(all_units_df.UnitID):
     #    unit_df = all_units_df[all_units_df.UnitID == unit]
     #    print(unit_df)
