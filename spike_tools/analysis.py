@@ -13,7 +13,7 @@ def firing_rate(spData, channelData, bins, smoothing, trials=None):
         # spData is pandas dataframe with at least IntervalID, UnitId, and SpikeTimeFromStart columns
         trial_unit_index = pd.MultiIndex.from_product([np.unique(spData.TrialNumber), np.unique(channelData.UnitID).astype(int), bins[:-1]], names=["TrialNumber", "UnitID", "TimeBins"]).to_frame()
     else:
-        trial_unit_index = pd.MultiIndex.from_product([trials, np.unique(spData.UnitID), bins[:-1]], names=["TrialNumber", "UnitID", "TimeBins"]).to_frame()
+        trial_unit_index = pd.MultiIndex.from_product([trials, np.unique(channelData.UnitID).astype(int), bins[:-1]], names=["TrialNumber", "UnitID", "TimeBins"]).to_frame()
     trial_unit_index = trial_unit_index.droplevel(2).drop(columns=["TrialNumber", "UnitID"]).reset_index()
     
     groupedData = spData.groupby(["TrialNumber", "UnitID"])
