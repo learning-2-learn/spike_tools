@@ -70,7 +70,6 @@ def list_session_units(fs, subject, session, species_dir=NHP_WCST_DIR):
         unit_files = glob.glob(spike_path + "*spiketimes.mat")
     else: 
         unit_files = fs.glob(spike_path + "*spiketimes.mat")
-
     channels = [x.split("chan-")[-1].split("_")[0] for x in unit_files]
     units = [int(x.split("unit-")[-1].split("_")[0]) for x in unit_files]
     unit_info = pd.DataFrame(np.array([channels, units, unit_files]).T, columns=["Channel", "Unit", "SpikeTimesFile"])
@@ -78,12 +77,13 @@ def list_session_units(fs, subject, session, species_dir=NHP_WCST_DIR):
     unit_info["UnitID"] = np.arange(len(unit_info))
     return unit_info
 
-def _get_spike_timestamps(fs, x):
+def _get_spike_timestamps(fs, row):
     if fs is None:
-        f = open(x.SpikeTimesFile, 'rb')
+        f = open(row.SpikeTimesFile, 'rb')
     else: 
-        f = fs.open(x.SpikeTimesFile)
-    return np.squeeze(h5py.File(f).get('timestamps').astype(int))
+        f = fs.open(row.SpikeTimesFile)
+    row["SpikeTime"] = np.squeeze(h5py.File(f).get('timestamps').astype(int))
+    return row
 
 def get_spike_times(fs, subject, session, channels=[], units=[], species_dir=NHP_WCST_DIR):
     all_unit_info = list_session_units(fs, subject, session, species_dir)
@@ -93,10 +93,10 @@ def get_spike_times(fs, subject, session, channels=[], units=[], species_dir=NHP
         filter_rows = all_unit_info[all_unit_info.Channel.isin(channels)]
     elif len(channels) > 0 and len(units) > 0:
         filter_rows = all_unit_info[(all_unit_info.Channel.isin(channels)) & (all_unit_info.Unit.isin(units))]
-    spike_times = filter_rows.apply(lambda x: _get_spike_timestamps(fs, x), axis=1).explode()
-    spike_times_df = pd.DataFrame(spike_times, index=spike_times.index.values, columns=["SpikeTime"])
-    spike_times_df["UnitID"] = spike_times_df.index.values
-    return spike_times_df
+    spike_times = filter_rows.apply(lambda x: _get_spike_timestamps(fs, x), axis=1)
+    spike_times = spike_times.explode("SpikeTime")[["UnitID", "SpikeTime"]]
+    spike_times = spike_times.reset_index().drop(columns="index")
+    return spike_times
 
 def get_spike_times_by_trial(fs, subject, session, trials=[], channels=[], units=[], start_field="TrialStart", end_field="TrialEnd", pre_start=0, post_end=0):
     trial_file = get_behavior_path(subject, session)
