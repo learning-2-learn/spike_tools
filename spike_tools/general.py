@@ -93,6 +93,8 @@ def get_spike_times(fs, subject, session, channels=[], units=[], species_dir=NHP
         filter_rows = all_unit_info[all_unit_info.Channel.isin(channels)]
     elif len(channels) > 0 and len(units) > 0:
         filter_rows = all_unit_info[(all_unit_info.Channel.isin(channels)) & (all_unit_info.Unit.isin(units))]
+    if len(filter_rows) == 0: 
+        return None
     spike_times = filter_rows.apply(lambda x: _get_spike_timestamps(fs, x), axis=1)
     spike_times = spike_times.explode("SpikeTime")[["UnitID", "SpikeTime"]]
     spike_times = spike_times.reset_index().drop(columns="index")
